@@ -3,9 +3,11 @@ const bcrypt = require('bcrypt');
 const _ = require('underscore');
 const app = express();
 const Usuario = require('../models/usuario');
+const { verificaToken, verificaRole_Admin } = require('../middlewares/autenticacion');
 
 
-app.get('/usuario', function(req, res) {
+//Conseguir un/Todos usuario
+app.get('/usuario',(req, res) => {
 
     let desde = req.query.desde || 0;
     desde = Number(desde);
@@ -36,7 +38,8 @@ app.get('/usuario', function(req, res) {
 
 });
 
-app.post('/usuario', function(req, res) {
+//Crear usuario
+app.post('/usuario', verificaToken ,(req, res) => {
 
     let body = req.body;
     let usuario = new Usuario({
@@ -65,7 +68,8 @@ app.post('/usuario', function(req, res) {
 });
 
 
-app.put('/usuario/:id', function(req, res) {
+//Actualizar usuario
+app.put('/usuario/:id', verificaToken ,(req, res) => {
     let id = req.params.id;
     let body = _.pick(req.body,['nombre','email','img','role','estado']);
 
@@ -86,7 +90,9 @@ app.put('/usuario/:id', function(req, res) {
     
 });
 
-app.delete('/usuario/:id', function(req, res) {
+
+// "Eliminar usuario", cambiamos su estado a falso
+app.delete('/usuario/:id', verificaToken ,(req, res)  => {
 
     let id = req.params.id;
     let cambiaEstado = {
